@@ -1,11 +1,12 @@
 const User=require('../models/User')
 const bcrypt=require('bcryptjs')
 
-
+// CORE LOGIC FOR SIGN UP FEATURES
 async function signup(req,res){
     try{
         const {email,password}=req.body
 
+        // SPECIAL CASE HANDLING
         if(typeof email !=="string" || typeof password !=='string'){
             return res.status(401).json({message:'only charecter is required'})
         }
@@ -15,6 +16,7 @@ async function signup(req,res){
 
         }
 
+        // PREPARE EMAIL & FIND IN DB
         const refinemail=email.trim().toLowerCase()
 
         const existuser=await User.findOne({email:refinemail})
@@ -22,8 +24,10 @@ async function signup(req,res){
             return res.status(409).json({message:'this email is already used'})
         }
 
+        //HASHING THE PASSWORD
         const hashpassword=await bcrypt.hash(password,12)
 
+        // STORE INFORMATION IN DB
         await User.create({
             email:refinemail,
             password:hashpassword,
